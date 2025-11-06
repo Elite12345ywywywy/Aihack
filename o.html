@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+
+<!-- Mirrored from mineshack.in/tapi/o.html by HTTrack Website Copier/3.x [XR&CO'2017], Sat, 25 Oct 2025 13:45:25 GMT -->
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Drago Predictor 3.0</title>
+<style>
+  :root{
+    --bg:#050916;
+    --card:#0f1724;
+    --accent:#00e7ff;
+    --gold:#ffd75a;
+    --muted:#9aa7bf;
+    --green:#3be06a;
+    --red:#ff5c6c;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:'Inter',system-ui,Arial,sans-serif;
+    background:var(--bg);
+    color:#e6eef8;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+  .wrap{max-width:420px;margin:18px auto;padding:18px;position:relative}
+
+  /* Header */
+  .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
+  .title{font-weight:700;color:var(--gold);font-size:18px;}
+  .subtitle{color:var(--accent);font-weight:600;font-size:13px;background:linear-gradient(90deg,rgba(0,0,0,0.15),rgba(255,255,255,0.02));padding:6px 10px;border-radius:10px;}
+  .register-btn{
+    background:var(--accent);
+    color:#000;
+    font-weight:700;
+    padding:6px 12px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    box-shadow:0 0 10px var(--accent);
+    transition:transform 0.15s ease;
+  }
+  .register-btn:hover{transform:scale(1.05);}
+
+  /* Cards */
+  .card{
+    background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.03);
+    border-radius:14px;
+    padding:14px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.6);
+  }
+
+  .prediction-area{display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px;}
+
+  .big-circle{
+    width:120px;height:120px;border-radius:50%;
+    background:linear-gradient(145deg,rgba(59,224,106,0.12),rgba(0,231,255,0.06));
+    display:flex;align-items:center;justify-content:center;
+    font-size:56px;font-weight:800;color:var(--green);
+    border:3px solid rgba(59,224,106,0.18);
+    box-shadow:0 8px 30px rgba(59,224,106,0.06), inset 0 -6px 20px rgba(0,0,0,0.3);
+    transition:transform .3s ease,color .3s ease,border-color .3s ease,box-shadow .3s ease;
+  }
+  .big-circle.alert{
+    border-color:var(--red);
+    color:var(--red);
+    box-shadow:0 0 20px var(--red);
+    transform:scale(1.05);
+  }
+
+  .pred-text{font-size:14px;color:var(--muted);}
+  .timer{margin-top:6px;font-size:14px;color:var(--accent);font-weight:600;transition:color .3s ease;}
+  .timer.alert{color:var(--red)}
+
+  .modes{display:flex;gap:10px;margin-top:14px;}
+  .mode-btn{flex:1;padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.1);
+    background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.03));
+    color:var(--gold);font-weight:700;cursor:pointer;transition:transform .12s ease;}
+  .mode-btn:hover{transform:translateY(-2px)}
+
+  .lists{margin-top:14px;display:grid;gap:12px;}
+  table{width:100%;border-collapse:collapse;font-size:13px;color:#d8e9ff;}
+  th,td{text-align:center;padding:10px 6px;border-bottom:1px solid rgba(255,255,255,0.02);}
+  thead th{color:var(--accent);font-weight:700;font-size:13px;}
+
+  .history-card{max-height:220px;overflow:auto;border-radius:8px;padding:6px;
+    background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(0,0,0,0.02));}
+
+  .pagination{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+  .pg-btn{padding:8px 12px;border-radius:8px;background:var(--accent);color:black;font-weight:700;border:none;cursor:pointer;}
+  .result-ok{color:var(--green);font-weight:700}
+  .result-bad{color:var(--red);font-weight:700}
+
+  /* Telegram Button */
+  .telegram-btn{
+    position:fixed;
+    bottom:15px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#0088cc;
+    color:#fff;
+    font-weight:700;
+    font-size:16px;
+    padding:10px 18px;
+    border-radius:30px;
+    text-decoration:none;
+    box-shadow:0 0 15px #0088cc;
+    transition:0.3s;
+  }
+  .telegram-btn:hover{background:var(--accent);color:black;box-shadow:0 0 18px var(--accent)}
+
+  @media (max-width:420px){
+    .wrap{padding:12px;margin:8px auto}
+    .big-circle{width:96px;height:96px;font-size:44px}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="title">@colourfreehack V1</div>
+      <button class="register-btn" onclick="window.open('../../external.html?link=https://www.tashanwin.cc/#/register?invitationCode=45662102545','_blank')">Register</button>
+    </div>
+    <div class="subtitle" id="modeLabel">Wingo 1 Min</div>
+
+    <div class="card">
+      <div class="prediction-area">
+        <div id="predictedNumberContainer" class="big-circle">--</div>
+        <div id="predictedPremium" class="pred-text">Premium: N/A</div>
+        <div id="timeRemaining" class="timer">@colourfreehack</div>
+
+        <div class="modes">
+          <button class="mode-btn" id="btnBigSmall">BIG/SMALL</button>
+          <button class="mode-btn" id="btnNumber">NUMBER</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="lists">
+      <div class="card">
+        <div style="font-weight:700;color:var(--accent);margin-bottom:6px">Latest Results</div>
+        <table id="dataTable">
+          <thead><tr><th>Issue</th><th>Number</th><th>Color</th><th>Premium</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:700;color:var(--accent);margin-bottom:6px">Prediction History</div>
+        <div class="history-card">
+          <table id="predictionHistoryTable">
+            <thead><tr><th>Issue</th><th>Predicted</th><th>Actual</th><th>Result</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button id="prevPage" class="pg-btn">Prev</button>
+          <div style="color:var(--muted);font-weight:600" id="pageInfo">Page 1</div>
+          <button id="nextPage" class="pg-btn">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a href="../../external.html?link=https://t.me/colourfreehack" target="_blank" class="telegram-btn">📲 Join Telegram</a>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements
+    const tableBody = document.querySelector('#dataTable tbody');
+    const predictedNumberContainer = document.getElementById('predictedNumberContainer');
+    const predictedPremiumElement = document.getElementById('predictedPremium');
+    const timerElement = document.getElementById('timeRemaining');
+    const historyTableBody = document.querySelector('#predictionHistoryTable tbody');
+    const prevPageButton = document.getElementById('prevPage');
+    const nextPageButton = document.getElementById('nextPage');
+    const pageInfo = document.getElementById('pageInfo');
+    const btnBigSmall = document.getElementById('btnBigSmall');
+    const btnNumber = document.getElementById('btnNumber');
+
+    // State + storage keys
+    let predictionHistory = JSON.parse(localStorage.getItem('predictionHistory')) || [];
+    let lastPrediction = JSON.parse(localStorage.getItem('lastPrediction'));
+    let currentPrediction = JSON.parse(localStorage.getItem('currentPrediction'));
+    let currentPage = 0;
+    const itemsPerPage = 10;
+    let timerInterval = null;
+
+    // Fallback mock if API doesn't respond or for dev
+    const MOCK_LIST = [
+      { issueNumber: '202509150001', number: '7', colour: 'Green', premium: '5' },
+      { issueNumber: '202509150000', number: '4', colour: 'Red', premium: '3' },
+      { issueNumber: '202509149999', number: '1', colour: 'Green', premium: '2' }
+    ];
+
+    // --- API calls (from your original) ---
+    const fetchNoAverageEmerdList = () => {
+        const requestData = {
+            pageSize: 10,
+            pageNo: 1,
+            typeId: 1,
+            language: 0,
+            random: "ded40537a2ce416e96c00e5218f6859a",
+            signature: "69306982EEEB19FA940D72EC93C62552",
+            timestamp: Math.floor(Date.now() / 1000)
+        };
+
+        return fetch('../../external.html?link=https://api.bdg88zf.com/api/webapi/GetNoaverageEmerdList', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+                'Accept': 'application/json, text/plain, */*'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.json())
+        .catch(error => {
+            console.error('Error fetching no average EMERD list data:', error);
+            // return a shaped fallback object similar to expected response
+            return { data: { list: MOCK_LIST } };
+        });
+    };
+
+    const fetchGameIssue = () => {
+        const requestData = {
+            typeId: 1,
+            language: 0,
+            random: "f8dcb5c527814db68800e3946a2b60e8",
+            signature: "08CF7FF3339ED58D4743F4B650FCBEA9",
+            timestamp: Math.floor(Date.now() / 1000)
+        };
+
+        return fetch('../../external.html?link=https://api.bdg88zf.com/api/webapi/GetGameIssue', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+                'Accept': 'application/json, text/plain, */*'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.json())
+        .catch(error => {
+            console.error('Error fetching game issue:', error);
+            // fallback: endTime 20 seconds from now
+            const endTime = new Date(Date.now() + 20000).toISOString();
+            return { data: { endTime } };
+        });
+    };
+
+    // categorize number into SMALL/BIG
+    const categorizeNumber = (number) => {
+        const n = Number(number);
+        if (!Number.isFinite(n)) return 'Unknown';
+        if (n >= 0 && n <= 4) return 'SMALL';
+        if (n >= 5 && n <= 9) return 'BIG';
+        return 'Unknown';
+    };
+
+    const generateRandomPrediction = () => {
+        const randomNumber = Math.floor(Math.random() * 10);
+        const randomCategory = categorizeNumber(randomNumber);
+        return { number: randomNumber, category: randomCategory };
+    };
+
+    // update main UI from fetched list
+    const updateDataAndPrediction = () => {
+        return fetchNoAverageEmerdList()
+            .then(data => {
+                const list = (data && data.data && data.data.list) ? data.data.list : MOCK_LIST;
+                tableBody.innerHTML = '';
+                list.forEach(item => {
+                    const numberCategory = categorizeNumber(Number(item.number));
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.issueNumber}</td>
+                        <td>${item.number} (${numberCategory})</td>
+                        <td>${item.colour || '-'}</td>
+                        <td>${item.premium || '-'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                // pick latest issue from list[0] if exists
+                const latest = list[0];
+                if (!latest) return;
+
+                const latestIssue = latest.issueNumber;
+                const latestActual = Number(latest.number);
+                const actualCategory = categorizeNumber(latestActual);
+
+                // if lastPrediction not same issue -> push history and generate new
+                if (!lastPrediction || lastPrediction.issueNumber !== latestIssue) {
+                    if (lastPrediction) {
+                        const result = (lastPrediction.category === actualCategory) ? '✔' : '❌';
+                        predictionHistory.unshift({
+                            issueNumber: latestIssue,
+                            predictedNumber: lastPrediction.number,
+                            actualNumber: latestActual,
+                            result: result
+                        });
+                        // keep only recent 200 to avoid huge localStorage
+                        predictionHistory = predictionHistory.slice(0, 200);
+                        localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));
+                    }
+
+                    currentPrediction = generateRandomPrediction();
+                    currentPrediction.issueNumber = latestIssue;
+                    localStorage.setItem('currentPrediction', JSON.stringify(currentPrediction));
+                }
+
+                // show current prediction
+                predictedNumberContainer.textContent = currentPrediction ? currentPrediction.number : '--';
+                predictedPremiumElement.textContent = `Category: ${currentPrediction ? currentPrediction.category : 'N/A'}`;
+
+                lastPrediction = {
+                    issueNumber: latestIssue,
+                    number: currentPrediction.number,
+                    category: currentPrediction.category
+                };
+                localStorage.setItem('lastPrediction', JSON.stringify(lastPrediction));
+
+                updatePredictionHistoryTable();
+            })
+            .catch(error => {
+                console.error('Error updating data and prediction:', error);
+            });
+    };
+
+    const updatePredictionHistoryTable = () => {
+        historyTableBody.innerHTML = '';
+
+        const start = currentPage * itemsPerPage;
+        const end = start + itemsPerPage;
+        const paginatedHistory = predictionHistory.slice(start, end);
+
+        paginatedHistory.forEach(entry => {
+            const row = document.createElement('tr');
+            const resClass = (entry.result === '✔') ? 'result-ok' : 'result-bad';
+            row.innerHTML = `
+                <td>${entry.issueNumber}</td>
+                <td>${entry.predictedNumber}</td>
+                <td>${entry.actualNumber}</td>
+                <td class="${resClass}">${entry.result}</td>
+            `;
+            historyTableBody.appendChild(row);
+        });
+
+        prevPageButton.disabled = currentPage === 0;
+        nextPageButton.disabled = end >= predictionHistory.length;
+        pageInfo.textContent = `Page ${currentPage + 1}`;
+    };
+
+    const updateTimer = () => {
+        return fetchGameIssue()
+            .then(data => {
+                const endTime = (data && data.data && data.data.endTime) ? data.data.endTime : new Date(Date.now()+15000).toISOString();
+                const endDate = new Date(endTime);
+                const now = new Date();
+                let remainingTimeMs = endDate - now;
+
+                if (remainingTimeMs <= 0) {
+                    timerElement.textContent = "Time Remaining: 00:00:00";
+                    // When period ends, immediately refresh data & prediction
+                    return updateDataAndPrediction().then(()=>{ /* noop */ });
+                } else {
+                    const hours = String(Math.floor(remainingTimeMs / (1000 * 60 * 60))).padStart(2, '0');
+                    const minutes = String(Math.floor((remainingTimeMs % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                    const seconds = String(Math.floor((remainingTimeMs % (1000 * 60)) / 1000)).padStart(2, '0');
+                    timerElement.textContent = `Time Remaining: ${hours}:${minutes}:${seconds}`;
+                }
+            })
+            .catch(error => console.error('Error fetching game issue for timer:', error));
+    };
+
+    // Pagination
+    prevPageButton.addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            updatePredictionHistoryTable();
+        }
+    });
+
+    nextPageButton.addEventListener('click', () => {
+        if ((currentPage + 1) * itemsPerPage < predictionHistory.length) {
+            currentPage++;
+            updatePredictionHistoryTable();
+        }
+    });
+
+    // Mode buttons (UI only for now)
+    btnBigSmall.addEventListener('click', ()=>{ alert('BIG/SMALL mode clicked '); });
+    btnNumber.addEventListener('click', ()=>{ alert('NUMBER mode clicked '); });
+
+    // initialize
+    if (!currentPrediction) {
+        currentPrediction = generateRandomPrediction();
+        localStorage.setItem('currentPrediction', JSON.stringify(currentPrediction));
+    }
+    updateDataAndPrediction();
+    updateTimer();
+
+    // interval: update timer every second; update data every 5 seconds to be reasonable
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(()=>{
+        updateTimer();
+    }, 1000);
+
+    // poll data/prediction every 5 seconds (configurable)
+    setInterval(()=>{
+      updateDataAndPrediction();
+    }, 5000);
+
+    // initial render of history
+    updatePredictionHistoryTable();
+});
+</script>
+</body>
+
+<!-- Mirrored from mineshack.in/tapi/o.html by HTTrack Website Copier/3.x [XR&CO'2017], Sat, 25 Oct 2025 13:45:25 GMT -->
+</html>
