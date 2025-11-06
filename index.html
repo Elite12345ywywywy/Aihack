@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Mirrored from mineshack.in/tapi/ by HTTrack Website Copier/3.x [XR&CO'2017], Thu, 06 Nov 2025 16:52:44 GMT -->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>abhishek.tricks</title>
+  <style>
+    body {
+      margin: 0;
+      background: #050A16;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .header {
+      background: #0f1724;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #FFD75A;
+      z-index: 10;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .header-btn {
+      background: #00e7ff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .header-btn:hover {
+      background: #00c9e6;
+      transform: scale(1.05);
+    }
+
+    iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Predictor overlay */
+    .predictor-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      display: none;
+      flex-direction: column;
+      z-index: 999;
+    }
+
+    .predictor-overlay iframe {
+      width: 100%;
+      flex: 1;
+      border: none;
+    }
+
+    .close-btn {
+      background: #ff5c6c;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 10px;
+      align-self: flex-end;
+    }
+
+    .close-btn:hover {
+      background: #e64958;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔊 Sound file -->
+  <audio id="bgSound" src="sound.mp3" autoplay muted preload="auto"></audio>
+
+  <div class="header">
+    <div>made by @colourfreehack</div>
+    <div class="btn-group">
+      <button class="header-btn" onclick="openPredictor()">Predictor</button>
+      <button class="header-btn" onclick="openTelegram()">Telegram</button>
+    </div>
+  </div>
+
+  <!-- Main Webview -->
+  <iframe id="mainFrame" src="../../external.html?link=https://www.tashanwin.cc/#/register?invitationCode=45662102545"></iframe>
+
+  <!-- Predictor Overlay -->
+  <div class="predictor-overlay" id="predictor">
+    <button class="close-btn" onclick="closePredictor()">✖ Close</button>
+    <iframe src="o.html"></iframe>
+  </div>
+
+  <script>
+    const predictor = document.getElementById("predictor");
+
+    function openPredictor() {
+      predictor.style.display = "flex";
+    }
+
+    function closePredictor() {
+      predictor.style.display = "none";
+    }
+
+    function openTelegram() {
+      window.open("../../external.html?link=https://t.me/colourfreehack", "_blank");
+    }
+
+    // ---------- SOUND AUTO-PLAY + CLICK FALLBACK ----------
+    const sound = document.getElementById("bgSound");
+
+    function tryPlaySound() {
+      sound.muted = false;
+      sound.play()
+        .then(() => {
+          console.log("Sound is playing ✅");
+          document.removeEventListener("click", tryPlaySound);
+        })
+        .catch(() => {
+          console.log("Autoplay blocked, waiting for user click...");
+        });
+    }
+
+    window.addEventListener("load", tryPlaySound);
+    document.addEventListener("click", tryPlaySound);
+  </script>
+
+</body>
+
+<!-- Mirrored from mineshack.in/tapi/ by HTTrack Website Copier/3.x [XR&CO'2017], Thu, 06 Nov 2025 16:52:46 GMT -->
+</html>
